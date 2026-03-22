@@ -41,3 +41,5 @@ pnpm-debug.log*
 
 # ts
 *.tsbuildinfo
+/src/vite-env.d.ts
+/dist

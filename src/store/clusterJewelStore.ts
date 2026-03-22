@@ -2,22 +2,15 @@ import { create } from 'zustand';
 import { SearchResult, ClusterJewelFilters } from '../types/poe-api';
 
 export interface ClusterJewelState {
-  // Search state
   results: SearchResult[];
   isLoading: boolean;
   error: string | null;
   totalResults: number;
   currentQueryId: string | null;
-
-  // Filter state
   filters: ClusterJewelFilters;
   sortColumn: 'price' | 'ilvl' | 'name' | null;
   sortDirection: 'asc' | 'desc';
-
-  // Available categories
   availableJewelTypes: string[];
-
-  // Actions
   setResults: (results: SearchResult[], total: number, queryId: string) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
@@ -26,8 +19,6 @@ export interface ClusterJewelState {
   setAvailableJewelTypes: (types: string[]) => void;
   clearError: () => void;
   resetFilters: () => void;
-
-  // Computed
   getFilteredResults: () => SearchResult[];
 }
 
@@ -94,8 +85,7 @@ export const useClusterJewelStore = create<ClusterJewelState>((set, get) => ({
     filtered = filtered.filter((r) => {
       if (r.priceAmount < priceMin) return false;
       if (priceMax !== null && r.priceAmount > priceMax) return false;
-      if (r.ilvl < ilvlMin || r.ilvl > ilvlMax) return false;
-      return true;
+      return !(r.ilvl < ilvlMin || r.ilvl > ilvlMax);
     });
 
     // Apply sorting

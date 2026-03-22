@@ -1,45 +1,62 @@
-import React from 'react';
-import './App.css';
+import React, { useEffect, useState } from 'react';
 import ClusterJewelSearch from './components/ClusterJewelSearch';
-import FilterPanel from './components/FilterPanel';
-import ResultsTable from './components/ResultsTable';
+
+type ThemeMode = 'light' | 'dark';
+
+const THEME_STORAGE_KEY = 'poe-cluster-search-theme';
+
+const getInitialTheme = (): ThemeMode => {
+  if (typeof window === 'undefined') {
+    return 'dark';
+  }
+
+  const savedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
+  if (savedTheme === 'light' || savedTheme === 'dark') {
+    return savedTheme;
+  }
+
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+};
 
 function App() {
+  const [theme, setTheme] = useState<ThemeMode>(getInitialTheme);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+  }, [theme]);
+
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Path of Exile Cluster Jewel Finder
-          </h1>
-          <p className="text-gray-600">
-            Real-time price tracking and filtering for cluster jewels
-          </p>
-        </div>
-
-        {/* Search Section */}
-        <div className="mb-8">
-          <ClusterJewelSearch />
-        </div>
-
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Sidebar - Filters */}
-          <div className="lg:col-span-1">
-            <FilterPanel />
+    <div className="min-h-screen bg-[var(--bg-page)] text-[var(--text-primary)] transition-colors">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <header className="mb-8 flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+          <div className="space-y-2">
+            <h1 className="text-4xl font-bold tracking-tight text-[var(--text-primary)]">
+              Jason&apos;s cooking with cluster jewels
+            </h1>
+            <p className="max-w-2xl text-base text-[var(--text-secondary)]">
+              Pick your big ass cluster money maker and see what you can cook up.
+            </p>
           </div>
 
-          {/* Main - Results */}
-          <div className="lg:col-span-3">
-            <ResultsTable />
-          </div>
-        </div>
+          <button
+            type="button"
+            className="inline-flex items-center gap-3 self-start rounded-full border border-[var(--border-strong)] bg-[var(--surface-card)] px-4 py-3 text-[var(--text-primary)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5"
+            onClick={() =>
+              setTheme((currentTheme) => (currentTheme === 'dark' ? 'light' : 'dark'))
+            }
+            aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
+          >
+            <span className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--text-muted)]">
+              Theme
+            </span>
+            <span className="min-w-[4.5rem] rounded-full bg-[var(--surface-subtle)] px-3 py-1.5 text-center text-sm font-bold text-[var(--text-primary)]">
+              {theme === 'dark' ? 'Dark' : 'Light'}
+            </span>
+          </button>
+        </header>
 
-        {/* Footer */}
-        <div className="mt-12 text-center text-gray-500 text-sm">
-          <p>Data from Path of Exile Trade API • Updated in real-time</p>
-        </div>
+        <ClusterJewelSearch />
       </div>
     </div>
   );
